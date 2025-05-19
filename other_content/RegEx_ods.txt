@@ -1,0 +1,33 @@
+quick and dirty RegEx Lösung zur Extraktion von Attributwerten aus Produktbezeichnungen
+
+=IF(REGEX(A2;ATTRVAL_sheet.$A$2;"$1")<>A2;REGEX(A2;ATTRVAL_sheet.$A$2;"$1");"")
+
+Leerstring als völlige Alternative
+
+=REGEX(B2;RegEx.$A$2;"$1")
+
+===
+
+Matrixformel zur Ermittlung einer Matrix aus Attributbezeichnungen anhand Attributwerten
+
+=IF(A2:Z999<>"";$A$1:$Z$1;"")
+Matrixfunktion aktivieren mit strg+shift+return
+
+===
+
+Kombination von Einträgen zu Kette (',' für Attribute, '#' für Werte)
+
+=TEXTJOIN(",";1;A2:Z2)
+
+===
+
+sonstiges:
+
+^.* (li|re)((nks|\.)?|(chts|\.)?).*$
+Um "li" oder "re" als Attributwerte zu Seite zu extrahieren, kommt ohne Synonyme aus
+
+^.*?(|$).*$
+Leerstring als komplette Alternative für kürzeren Ausdruck
+
+
+

@@ -1,0 +1,90 @@
+#wb = openpyxl.Workbook('C:/Users\ThomasHabenschuss\Documents\Datenimports\Luksche_Produktattribute2.xlsx')
+df = pd.read_excel('C:/Users\ThomasHabenschuss\Documents\Datenimports\Luksche_Produktattribute.xlsx', sheet_name='attr_val_combo')
+
+df['Werte'] = df['Werte'].apply(lambda x: re.sub(r"[\[\]']", '', str(x)) if isinstance(x, str) else x)
+df['Werte'] = df['Werte'].apply(lambda x: re.sub(r", ", ',', str(x)) if isinstance(x, str) else x)
+
+df.to_excel('C:/Users\ThomasHabenschuss\Documents\Datenimports\Luksche_Produktattribute2.xlsx', index=False)
+
+
+    if len(catarr) == 1:
+        continue
+    elif len(catarr) == 2:
+        print(catarr[1] + "\t" + catarr[0])
+        #df_rec1._append({'Name': catarr[1], 'Oberkategorie': catarr[0]}, ignore_index=True)
+    elif len(catarr) == 3:
+        print(catarr[2] + "\t" + catarr[1] + "\n")
+        print(catarr[1] + "\t" + catarr[0])
+
+if 'attr_val_combo' in wb.sheetnames:
+    ws = wb['attr_val_combo']
+    # Durch alle Zeilen iterieren und die Substitution in der angegebenen Spalte durchführen
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=2, max_col=2):
+        for cell in row:
+            if cell.value:
+                cleaned_value = re.sub(r"[\[\]' ]", '', str(cell.value))
+                cell.value = cleaned_value
+
+    # Die Änderungen in der gleichen Datei speichern
+    wb.save('C:/Users\ThomasHabenschuss\Documents\Datenimports\Luksche_Produktattribute.xlsx')
+else:
+    print(f"Sheet {'attr_val_combo'} does not exist.")
+    print(wb.sheetnames)
+
+attributes = env['product.attributes'].search([])
+for attr in attributes:
+    print(attr.name + ":")
+    coll = []
+    for val in attr.value_ids:
+        coll.append(val.name)
+    print(coll)
+
+attributes = env['product.attribute.custom.value'].search([])
+for attr in attributes:
+    print(attr.name + ":")
+    coll = []
+    for val in attr.custom_product_template_attribute_value_id:
+        coll.append(val.name)
+    print(coll)
+
+categories = env['product.category'].search([['child_id', '=', False]])
+for cat in categories:
+    print(cat.complete_name)
+    print(cat.product_count)
+    attrcoll = []
+    prods = env['product.template'].search([('categ_id', '=', cat.id)])
+    for prod in prods:
+        for line in prod.attribute_line_ids:
+            if line.attribute_id.name not in attrcoll:
+                attrcoll.append(line.attribute_id.name)
+    print(cat.complete_name)
+    print(attrcoll)
+    print()
+
+def get_category_paths(categories, current_path=""):
+    paths = []
+    for cat in categories:
+        new_path = f"{current_path}/{cat.name}" if current_path else cat.name
+        if cat.child_id:
+            # Rekursiver Aufruf, wenn es Unterkategorien gibt
+            #paths.extend(get_category_paths(cat.child_id, new_path))
+            get_category_paths(cat.child_id, new_path)
+        else:
+            # Füge nur vollständige Pfade hinzu, wenn es keine Unterkategorien gibt
+            paths.append(new_path)
+    return paths
+
+all_paths = get_category_paths(categories)
+for path in all_paths:
+    print(path)
+
+with open('C:/Users\ThomasHabenschuss\Documents\Datenimports\Pilz\Kundenstammdaten.csv', 'r') as file:
+    for i, line in enumerate(file):
+        try:
+            print(f"Line {i}: {line.strip()}")
+        except UnicodeDecodeError:
+            print(f"Line {i}: kann teilweise nicht gelesen werden.")
+        except:
+            print(f"Line {i}: bewirkt unbekannten Fehler.")
+
+

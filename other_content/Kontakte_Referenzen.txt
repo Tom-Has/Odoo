@@ -1,0 +1,9 @@
+contacts = env['res.partner'].search([])
+counter = 0
+
+for contact in contacts:
+	if contact.ref:
+		contact.ref
+		counter += 1
+
+print("Es gibt soviele Kontakte mit Referenzen: " + str(counter))

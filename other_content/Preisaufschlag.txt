@@ -1,0 +1,69 @@
+=WENN(
+	T2="";
+	"";
+	WENN(
+		UND(
+			U2<>INDIREKT("U" & VERGLEICH(Q2; Q:Q; 0));
+			ZÄHLENWENN(INDIREKT("T" & VERGLEICH(Q2; Q:Q; 0) & ":T" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);T2)
+			>=
+			ZÄHLENWENN(INDIREKT("U" & VERGLEICH(Q2; Q:Q; 0) & ":U" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);U2)
+		);
+		U2&"@"&T2;
+		WENN(
+			UND(
+				V2<>INDIREKT("V" & VERGLEICH(Q2; Q:Q; 0));
+				ZÄHLENWENN(INDIREKT("T" & VERGLEICH(Q2; Q:Q; 0) & ":T" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);T2)
+				>=
+				ZÄHLENWENN(INDIREKT("V" & VERGLEICH(Q2; Q:Q; 0) & ":V" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);V2)
+			);
+			V2&"@"&T2;
+			WENN(
+				UND(
+					W2<>INDIREKT("W" & VERGLEICH(Q2; Q:Q; 0));
+					ZÄHLENWENN(INDIREKT("T" & VERGLEICH(Q2; Q:Q; 0) & ":T" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);T2)
+					>=
+					ZÄHLENWENN(INDIREKT("W" & VERGLEICH(Q2; Q:Q; 0) & ":W" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);W2)
+				);
+				W2&"@"&T2;
+				WENN(
+					UND(
+						X2<>INDIREKT("X" & VERGLEICH(Q2; Q:Q; 0));
+						ZÄHLENWENN(INDIREKT("T" & VERGLEICH(Q2; Q:Q; 0) & ":T" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);T2)
+						>=
+						ZÄHLENWENN(INDIREKT("X" & VERGLEICH(Q2; Q:Q; 0) & ":X" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);X2)
+					);
+					X2&"@"&T2;
+					WENN(
+						UND(
+							Y2<>INDIREKT("Y" & VERGLEICH(Q2; Q:Q; 0));
+							ZÄHLENWENN(INDIREKT("T" & VERGLEICH(Q2; Q:Q; 0) & ":T" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);T2)
+							>=
+							ZÄHLENWENN(INDIREKT("Y" & VERGLEICH(Q2; Q:Q; 0) & ":Y" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);Y2)
+						);
+						Y2&"@"&T2;
+						WENN(
+							UND(
+								Z2<>INDIREKT("Z" & VERGLEICH(Q2; Q:Q; 0));
+								ZÄHLENWENN(INDIREKT("T" & VERGLEICH(Q2; Q:Q; 0) & ":T" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);T2)
+								>=
+								ZÄHLENWENN(INDIREKT("Z" & VERGLEICH(Q2; Q:Q; 0) & ":Z" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);Z2)
+							);
+							Z2&"@"&Z2;
+							"CHECK@"&T2
+						)
+					)
+				)
+			)
+		)
+	);
+	WENN(
+		UND(T2=T1;ZÄHLENWENN(INDIREKT("U" & VERGLEICH(Q2; Q:Q; 0) & ":Z" & VERGLEICH(Q2; Q:Q; 0) + ZÄHLENWENN(Q:Q; Q2) - 1);LINKS(AA1;FINDEN("@";AA1)-1))>1);
+		AA1;
+		WENN(
+			T2="";
+			"";
+			"UNBEKANNTER_FEHLER_FUER@"&T2
+		)
+	)
+)
+

@@ -1,0 +1,22 @@
+=WENN(
+	T2="";
+	"";
+	WENN(
+		UND(U2<>"";ZÄHLENWENN(INDIREKT("U" & VERGLEICH(Q2; Q:Q; 0) & ":U" & ZEILE(Q2) - 1);U2)=0);
+		U2&"@"&T2;
+		WENN(
+			UND(V2<>"";ZÄHLENWENN(INDIREKT("V" & VERGLEICH(Q2; Q:Q; 0) & ":V" & ZEILE(Q2) - 1);V2)=0);
+			V2&"@"&T2;
+			WENN(
+				UND(W2<>"";ZÄHLENWENN(INDIREKT("W" & VERGLEICH(Q2; Q:Q; 0) & ":W" & ZEILE(Q2) - 1);W2)=0);
+				W2&"@"&T2;
+				WENN(
+					UND(X2<>"";ZÄHLENWENN(INDIREKT("X" & VERGLEICH(Q2; Q:Q; 0) & ":X" & ZEILE(Q2) - 1);X2)=0);
+					X2&"@"&T2;
+					"CHECK@"&T2
+				)
+			)
+		)
+	)
+)
+
