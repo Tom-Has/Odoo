@@ -23,12 +23,12 @@ for file in os.listdir(log_dir):
                         counter_list[i] += 1
         
         if not all(item == 0 for item in counter_list):
-            print(f"{filename} has:")
+            print(f"\n{filename} has:")
             for i, counter in enumerate(counter_list):
                 if counter > 0:
                     print(f"{counter} occurrences of '{search_string_list[i]}'.")
     except:
-        print(f"{filename} is not of type .gz or text file.")
+        print(f"\n{filename} is not of type .gz or text file.")
         continue
 
 
