@@ -1,21 +1,23 @@
 import csv
 import logging
-# from collections import defaultdict
 
-# Logger einrichten
+# establish logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Batch-Größe für Updates und Commits
+# establish relevant variables
+default_tariff_number = 17678
+
+# batch size for database commits
 BATCH_SIZE = 10000
 
 try:
-    # Schritt 1: Sammle alle x_SUPPL_Sansoft_auto-Werte aus der CSV-Datei
+    # step 1: gather relevant information from csv file
     auto_to_data = {}
     with open("export_base.csv", "r", encoding='utf-8') as update_file:
         csv_reader = csv.DictReader(update_file)
         
-        # Prüfen, ob alle erwarteten Spalten vorhanden sind
+        # check whether all required columns exist
         required_columns = [
             'auto', 'healthcare_deductible_netto', 'healthcare_deductible_brutto',
             'healthcare_total_deductible_netto', 'healthcare_total_deductible_brutto',
@@ -24,8 +26,9 @@ try:
         if not all(col in csv_reader.fieldnames for col in required_columns):
             missing = [col for col in required_columns if col not in csv_reader.fieldnames]
             raise ValueError(f"Fehlende Spalten in der CSV-Datei: {missing}")
-        
-        logger.info("Lese CSV-Datei und sammle x_SUPPL_Sansoft_auto-Werte...")
+
+        # read csv file line values as dict into collector dict
+        logger.info("Reading csv file and gathering column values...")
         for line in csv_reader:
             auto_to_data[line['auto']] = {
                 'healthcare_deductible_netto': float(line['healthcare_deductible_netto'] or 0.0),
@@ -36,25 +39,25 @@ try:
                 'healthcare_unit_tariff_brutto': float(line['healthcare_unit_tariff_brutto'] or 0.0),
                 'name': line['name'],
             }
-        logger.info(f"Gesammelt: {len(auto_to_data)} eindeutige x_SUPPL_Sansoft_auto-Werte.")
+        logger.info(f"Gathered: {len(auto_to_data)} unique values.")
     
-    # Schritt 2: Einmalige Suche nach allen Verkaufszeilen
-    logger.info("Suche nach Verkaufszeilen in der Datenbank...")
+    # step 2: gather records to update from relevant model
+    logger.info("Searching databse for recoreds to update...")
     orderlines = env['sale.order.line'].search([('x_SUPPL_Sansoft_auto', 'in', list(auto_to_data.keys()))])
-    logger.info(f"Gefunden: {len(orderlines)} Verkaufszeilen.")
+    logger.info(f"Gathered: {len(orderlines)} records.")
     
-    # Schritt 3: Verkaufszeilen mit CSV-Daten abgleichen und in Batches aktualisieren
+    # step 3: connect record values and csv values by matching key
     update_count = 0
     for i, orderline in enumerate(orderlines, 1):
         try:
             auto = orderline.x_SUPPL_Sansoft_auto
             if auto not in auto_to_data:
-                logger.warning(f"Keine CSV-Daten für x_SUPPL_Sansoft_auto={auto} gefunden.")
+                logger.warning(f"No csv data found for x_SUPPL_Sansoft_auto={auto}.")
                 continue
             
-            # Update-Daten vorbereiten
+            # prepare values to be updated
             update_data = {
-                #'tariff_number_id': 17678
+                'tariff_number_id': default_tariff_number
                 'healthcare_is_private': 'insurance_manual',
                 'healthcare_deductible_netto': auto_to_data[auto]['healthcare_deductible_netto'],
                 'healthcare_deductible_brutto': auto_to_data[auto]['healthcare_deductible_brutto'],
@@ -65,23 +68,23 @@ try:
                 'name': auto_to_data[auto]['name']
             }
             
-            # Update durchführen
+            # execute update
             orderline.write(update_data)
             update_count += 1
             
-            # Regelmäßig committen, um Speicher freizugeben
+            # commit regularly to free up memory
             if i % BATCH_SIZE == 0:
                 env.cr.commit()
-                logger.info(f"Batch von {BATCH_SIZE} Zeilen committed (insgesamt {i} verarbeitet).")
+                logger.info(f"Batch of {BATCH_SIZE} records committed (total of {i} processed).")
         
         except Exception as e:
-            logger.error(f"Fehler bei der Verarbeitung von x_SUPPL_Sansoft_auto={auto}: {str(e)}")
+            logger.error(f"Error while processing x_SUPPL_Sansoft_auto={auto}: {str(e)}")
             continue
     
-    # Finaler Commit
+    # final commit of residual updates
     env.cr.commit()
-    logger.info(f"Verarbeitung abgeschlossen: {update_count} Verkaufszeilen aktualisiert.")
+    logger.info(f"Processing complete: {update_count} records updated.")
 
 except Exception as e:
-    logger.error(f"Fehler beim Verarbeiten der CSV-Datei: {str(e)}")
+    logger.error(f"Error while processing csv file: {str(e)}")
     env.cr.rollback()
