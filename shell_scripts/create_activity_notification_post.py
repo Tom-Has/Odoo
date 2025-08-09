@@ -25,3 +25,7 @@ env['mail.message'].create({
     'subtype_id': env.ref('mail.mt_note').id,
     'author_id': env.ref('base.partner_root').id,
 })
+
+# alternativ falls der Eintrag zu bearbeiten vorliegt
+record.message_post(body="html content", message_type='notification')
+
