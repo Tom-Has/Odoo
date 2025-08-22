@@ -29,5 +29,12 @@ Um "li" oder "re" als Attributwerte zu Seite zu extrahieren, kommt ohne Synonyme
 ^.*?(|$).*$
 Leerstring als komplette Alternative für kürzeren Ausdruck
 
+Ausdruck für spreadsheet Feld vorbereiten:
+
+search:
+[\n\r\t ]
+
+replace:
+''
 
 
