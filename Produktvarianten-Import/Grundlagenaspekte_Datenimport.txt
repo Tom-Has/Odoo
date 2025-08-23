@@ -1,0 +1,21 @@
+Datenimport in Odoo
+
+grundlegendes Problem:
+Aspekte eines Unternehmens wie zB Produkte, Kontakte, Bewegungen, Orte sind in verschiedenen Systemen unterschiedlich abgebildet.
+
+technische Aspekte:
+
+-) in der Regel über Excel oder csv, Odoo bietet entsprechende Vorlagen, bezogen allerdings auf das Modell, in welches man importieren möchte
+-) für distinkte Produkte aus anderen Systeme gibt es ein Modul mit Excel Vorlage, das jene in Produkte (product.template Modell) und Produktvarianten (product.product Modell) auftrennt*
+-) wichtig ist zumindest eine Eigenschaft ("interne Referenz") um Einträge des alten Systems auseinanderzuhalten, diese ist dann ein Bindeglied für allfällige Anpassungen von weiteren Eigenschaften aus dem Altsystem
+
+Kopfweh-Aspekte:
+
+-) Nach welchen Regeln extrahiert man Produktnamen- und Varianteninformation aus einer Vorlage (Bsp. Maierhofer)
+-) Muss das der Kunde selber übernehmen oder der Implementierer? Bisher viel Last auf Kundenseite, kann man das durch Automatisierungen reduzieren?
+-) Automatisiert bedeutet sehr wahrscheinlich systematische Fehler, aber bei händischem Bearbeiten von mehreren 10k Einträgen sind zufällige Fehler unvermeidlich -> was führt zum geringeren Fehler?
+-) In welche Chargen teilt man Importe ggf auf? Nach allfälligem Problem am Server weiß man nicht wo der Import stehen geblieben ist. Mögliche Lösung: Jeweilige Einträge loggen, bei erfolgreichem Import aus einem DataFrame o. ä. streichen, allfälliges Problem mit Server auffangen und übrigen DataFrame o. ä. abspeichern für einen späteren neuen Versuch
+
+*Variantenimport-Tool:
+-) unklar ob am Ende nicht mehr Arbeit wie eigenes Skript
+-) unangenehm ist, dass ein Eintrag in Odoo mehrere Zeilen in Excel umfasst (Attribute und zugehörige Werte) wenn man im Standard bleibt
