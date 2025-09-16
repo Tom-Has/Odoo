@@ -19,6 +19,10 @@ def inspect_log_files(search_string_list):
                 for i, counter in enumerate(counter_list):
                     if counter > 0:
                         print(f"{counter} occurrences of '{search_string_list[i]}'.")
-        except:
-            print(f"\n{filename} is not of type .gz or text file.")
+              # bekannte Fehlerarten gezielt abfangen
+        except (OSError, gzip.BadGzipFile, UnicodeDecodeError) as e:
+            print(f"\n{filename} konnte nicht gelesen werden ({type(e).__name__}).")
+        except Exception as e:
+            print(f"\nUnbekannter Fehler bei {filename}: {e}")
             continue
+
