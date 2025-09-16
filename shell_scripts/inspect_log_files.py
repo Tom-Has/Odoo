@@ -2,7 +2,8 @@ import os
 import gzip
 
 def inspect_log_files(search_string_list):
-    for file in os.listdir('/home/odoo/logs'):
+    log_dir = '/home/odoo/logs'
+    for file in os.listdir(log_dir):
         try:
             filename = os.fsdecode(file)
             full_path = os.path.join(log_dir, filename)       
