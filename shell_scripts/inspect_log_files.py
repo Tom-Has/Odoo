@@ -2,7 +2,15 @@ import os
 import gzip
 
 def inspect_log_files(search_string_list):
-    log_dir = '/home/odoo/logs'
+    if os.path.exists('/home/odoo/logs'):
+        log_dir = '/home/odoo/logs'
+    elif os.path.exists('/etc/odona/' + self.env.cr.dbname + '/logs'):
+        log_dir = '/etc/odona/' + self.env.cr.dbname + '/logs'
+    elif os.path.exists('/var/odoo/' + self.env.cr.dbname + '/logs'):
+        log_dir = '/var/odoo/' + self.env.cr.dbname + '/logs'
+    else:
+        print(f"log dir not found, please check function.")
+        return
     for file in os.listdir(log_dir):
         filename = os.fsdecode(file)
         full_path = os.path.join(log_dir, filename)
@@ -39,3 +47,4 @@ odoo.log.2025-08-30.gz has:
 
 .ipynb_checkpoints konnte nicht gelesen werden (IsADirectoryError).
 """
+
