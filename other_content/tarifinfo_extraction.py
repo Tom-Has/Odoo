@@ -5,7 +5,7 @@ import re
 #import pathlib
 
 #get spreadsheet files in target folder
-source_path = "C:\\Users\ThomasHabenschuss\Documents\Datenimports\Maierhofer\Tarifinfo_2025"
+source_path = "path/to/Tarifinfo_2025"
 #file_list = list(pathlib.Path(source_path).glob('*.xlsx'))
 file_list = [i for i in os.listdir(source_path) if re.search(r"\.xlsx$", i, re.IGNORECASE)]
 
