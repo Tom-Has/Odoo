@@ -1,6 +1,6 @@
 # check which Enterprise modules are installed
-ee_modules = env['ir.module.module'].search([('license','=','OEEL-1')])
-for m in ee_modules:
+modules_ee = env['ir.module.module'].search([('license','=','OEEL-1')])
+for m in modules_ee:
     print(f"Name Modul: {m.name} / Installationsstatus: {m.state}")
 
 # uninstall a specific module
