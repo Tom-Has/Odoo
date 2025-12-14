@@ -1,3 +1,8 @@
+"""
+to be overhauled entirely
+"""
+
+"""
 import os
 import base64
 import pandas as pd
@@ -60,4 +65,6 @@ else:
     print("No PDF files found in the specified folder structure.")
 
 #if __name__ == "__main__":
+
 #   main()
+"""
