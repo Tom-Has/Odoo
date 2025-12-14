@@ -10,6 +10,7 @@ import os
 import base64
 import csv
 import ast
+import requests
 
 # helper function for converting pdf content to Base64
 def encode_file_to_base64(file_path):
@@ -17,7 +18,7 @@ def encode_file_to_base64(file_path):
         with open(file_path, "rb") as file:
             return base64.b64encode(file.read()).decode('utf-8')
     except Exception as e:
-        print(f"Fehler beim Kodieren der Datei {file_path}: {e}")
+        print(f"Error while encoding {file_path}: {e}")
         return None
 
 
@@ -25,6 +26,8 @@ def encode_file_to_base64(file_path):
 root_path = 'path/to/startingpoint'
 folder_subset_file = 'path/to/folderlist'
 csv_file = 'path/to/result'
+server = 'IP-adress/path'
+server_path = 'path/to/csv_file'
 
 # provide a list of folders when a subset of content needs to be converted
 with open(folder_subset_file, 'r') as f:
@@ -33,43 +36,46 @@ with open(folder_subset_file, 'r') as f:
 # list to store conversion results
 data = []
 
-# Durch das Verzeichnis iterieren
+# iterate through directory
 for dirpath, dirnames, filenames in os.walk(root_path):
     for filename in filenames:
         try:
             parent_folder = os.path.basename(dirpath)
-            if filename.lower().endswith('.pdf') and (int(parent_folder) in folder_subset_list or len(folder_subset_list) :
-
-        except Exception as e:
-            print(f"Fehler beim Durchsuchen des Ordners: {e}")
-    try:
-        if os.path.isdir(folder_path) and int(folder) in folder_list:
-            for file in os.listdir(folder_path):
-                if file.lower().endswith(".pdf"):
-                    file_path = os.path.join(folder_path, file)
-                    base64_content = encode_file_to_base64(file_path)
+            try:
+                parent_folder_int = int(parent_folder)
+            except Exception as e:
+                print(f"Directory {parent_folder} skipped because of conversion error: {e}")
+                continue
+            if filename.lower().endswith('.pdf') and (len(folder_subset_list) == 0 or parent_folder_int in folder_subset_list):
+                base64_content = encode_file_to_base64(os.path.join(dirpath, filename))
                     if base64_content:
-                        data.append([folder, base64_content])
-                    break
+                        data.append([parent_folder, base64_content])
+        except Exception as e:
+            print(f"Error during directory iteration: {e}")
 
 
-# CSV-Datei schreiben
+# write data to csv
 try:
     with open(csv_file, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["Ordnername", "Base64 Inhalt"])
+        writer.writerow(["foldername", "base64_datas_content"])
         writer.writerows(data)
-    print(f"CSV-Datei '{csv_file}' wurde erfolgreich erstellt.")
+    print(f"CSV file '{csv_file}' was created.")
 except Exception as e:
-    print(f"Fehler beim Schreiben der CSV-Datei: {e}")
+    print(f"Error while writing csv file: {e}")
+
+# upload csv file to server
+try:
+    with open(csv_file, 'rb') as f:
+        response = requests.post(server, files={'file': f})
+     print(f"CSV file '{csv_file}' was uploaded to {server} with response {response.status_code}.")
+except Exception as e:
+    print(f"Error while uploading csv file: {e}")
 
 
 """
 odoo shell procedure
 """
-
-# files or paths to files
-paths = ["encoded_pdfs.csv"]  # add or adpapt paths as needed
 
 # constants
 att_model = env['ir.attachment']
