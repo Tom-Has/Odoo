@@ -1,5 +1,5 @@
 """
-This snippet might be useful for custom modules where no view and/or export procedure is defined and an occasional list of given records is needed.
+This snippet might be useful for custom modules where no view and/or export procedure is defined and an occasional list of all or specific records is needed.
 """
 
 import csv
@@ -9,7 +9,7 @@ model_name = 'my.custom.model'
 model = env[model_name]
 
 # adapt exportable fields as needed
-model_fields = ['id', 'partner_id/id', 'partner_id/name']
+model_fields = ['.id', 'partner_id/.id', 'partner_id/name']
 
 # adapt name as needed
 filename = model_name + '_export.csv'
