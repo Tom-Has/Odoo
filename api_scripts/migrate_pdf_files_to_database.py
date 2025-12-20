@@ -1,6 +1,7 @@
 """
 code to migrate pdf files from a predecessor system to Odoo via XMLRPC API
-based on Odoo major version 17 
+based on Odoo major version 17
+note that this API will be phased out with major version 20
 """
 
 import os
@@ -11,21 +12,22 @@ from collections import namedtuple
 
 # define relevant file and directory paths
 root_path = 'path/to/startingpoint'
-folder_subset_file = 'path/to/folderlist/folderfilename.txt'    # must contain folder names as type string
+folder_subset_file = 'path/to/folderlist/folderfilename.txt'
 
 # provide credentials for XMPRPC API connection
-user_uid = 2    # admin user or adapt to user for which password or API key is available
-user_name = 'admin' # admin user or adapt to specific user
+user_name = 'my_user' # admin user or adapt to specific user
+password = 'my_password'    # user real password (OR preferentially)
+api_key = 'my_api_key'    # use real API key
 user_auth = password or api_key
 
 # provide connection specifications
-url = 'https://url.to.db'
-db = 'db_name'
+url = 'https://url.to.my_db'
+db = 'my_db'
 
 # establish connection to database
 try:
     common = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common')
-    common.authenticate(db, user_name, user_auth, {})
+    user_uid = common.authenticate(db, user_name, user_auth, {})
 except Exception as e:
     print(f'Error during establishing connection to {db}: {e}')
 
@@ -35,12 +37,13 @@ try:
 except Exception as e:
     print(f'Error during obtaining object processing parameter of {db}: {e}')
 
-# provide a list of folders when only a subset of pdf files needs to be migrated
+# provide a list of folders (ensure type string) when only a subset of pdf files needs to be migrated
 if os.path.isfile(folder_subset_file):
     with open(folder_subset_file, 'r') as f:
         folder_subset_list = ast.literal_eval(f.read())
 else:
     folder_subset_list = []
+folder_subset_list = list(map(str, folder_subset_list))
 
 # prepare error handling
 ErrorRecord = namedtuple('ErrorRecord', ['filename', 'reason'])
@@ -49,6 +52,10 @@ error_list = []
 # iterate through root directory and create attachment records via API call
 for dirpath, dirnames, filenames in os.walk(root_path):
     for filename in [f for f in filenames if f.lower().endswith('.pdf')]:
+        """
+        TBD:
+        extension to more file types, e.g. image, spreadsheet, document proecessing file
+        """
         parent_folder = os.path.basename(dirpath)
         if (len(folder_subset_list) == 0 or parent_folder in folder_subset_list):
             try:
@@ -59,6 +66,13 @@ for dirpath, dirnames, filenames in os.walk(root_path):
                 error_list.append(ErrorRecord(filename, 'error#encoding'))
                 continue
             if base64_content:
+                """
+                TBD:
+                logic for determining or defining res model and res id
+                conditional for when to use parent folder as key and what would be the alternative
+                """
+                res_model_string = ''
+                res_id = 0
                 try:
                     id = models.execute_kw(db, user_uid, user_auth, 'ir.attachment', 'create', [{
                         'name': filename,
@@ -81,3 +95,4 @@ for dirpath, dirnames, filenames in os.walk(root_path):
             print(f'{filename} seems to be empty.')
             error_list.append(ErrorRecord(filename, 'skipped#notspecified'))
             continue
+
