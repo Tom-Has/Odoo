@@ -93,7 +93,7 @@ for dirpath, dirnames, filenames in os.walk(root_path):
                         'key': parent_folder,
                         'res_model': res_model_string or '',
                         'res_id': res_id or 0,
-                        'mimetype': 'application/pdf',
+                        'mimetype': mimetype or 'text/plain',
                         'type': 'binary'
                     }])
                 except Exception as e:
@@ -108,5 +108,6 @@ for dirpath, dirnames, filenames in os.walk(root_path):
             print(f'{filename} is not in list.')
             error_list.append(ErrorRecord(filename, 'skipped#notspecified'))
             continue
+
 
 
