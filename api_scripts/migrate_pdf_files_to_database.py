@@ -6,6 +6,7 @@ note that this API will be phased out with major version 20
 
 import os
 import base64
+import re
 import ast
 import xmlrpc.client
 from collections import namedtuple
@@ -13,6 +14,13 @@ from collections import namedtuple
 # define relevant file and directory paths
 root_path = 'path/to/startingpoint'
 folder_subset_file = 'path/to/folderlist/folderfilename.txt'
+
+# define relevant mimetypes
+mimetype_map = {
+    'pdf': 'application/pdf',
+    'jpe?g': 'image/jpeg',
+    'tiff?': 'image/tiff'
+}
 
 # provide credentials for XMPRPC API connection
 user_name = 'my_user' # admin user or adapt to specific user
@@ -51,11 +59,16 @@ error_list = []
 
 # iterate through root directory and create attachment records via API call
 for dirpath, dirnames, filenames in os.walk(root_path):
-    for filename in [f for f in filenames if f.lower().endswith('.pdf')]:
-        """
-        TBD:
-        extension to more file types, e.g. image, spreadsheet, document proecessing file
-        """
+    for filename in filenames:
+        mimetype = ''
+        for key in mimetype_map.keys():
+            if re.findall(key, filename.split('.')[-1]):
+                mimetype = mimetype_map.get(key)
+                break
+        if not mimetype:
+            print(f'{filename} has no specified mime type.')
+            error_list.append(ErrorRecord(filename, 'skipped#nomimetype'))
+            continue
         parent_folder = os.path.basename(dirpath)
         if (len(folder_subset_list) == 0 or parent_folder in folder_subset_list):
             try:
@@ -92,7 +105,8 @@ for dirpath, dirnames, filenames in os.walk(root_path):
                 error_list.append(ErrorRecord(filename, 'error#emptyfile'))
                 continue
         else:
-            print(f'{filename} seems to be empty.')
+            print(f'{filename} is not in list.')
             error_list.append(ErrorRecord(filename, 'skipped#notspecified'))
             continue
+
 
