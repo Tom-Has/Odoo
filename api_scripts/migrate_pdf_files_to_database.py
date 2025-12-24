@@ -30,13 +30,13 @@ doc_id = 'id'
 filter_string = f'{file_path_col}.notnull() and {model_col}  not in [] and ...'
 
 # establish res.model map or default value and key parameters
-res_model_default = 'suppl.healthcare.supply.order'
-res_model_search = 'model.to.be.investigated.for.key'
+res_model_default = 'sale.order'
+res_model_search = 'sale.order.line'
 res_model_map = {
-    'VO': 'suppl.healthcare.prescription',
-    'RE': 'res.partner',
+    'VO': 'res.users',
+    'RE': 'res.partner'
 }
-key_field = 'x_Sansoft_auto'
+key_field = 'x_external_key'
 
 # provide credentials for XMPRPC API connection
 user_name = 'my_user' # admin user or adapt to specific user
@@ -130,3 +130,4 @@ for index, rows in df_file_specs_filtered.iterrows():
         print(f'{filename} seems to be empty.')
         error_list.append(ErrorRecord(filename, 'error#emptyfile'))
         continue
+
