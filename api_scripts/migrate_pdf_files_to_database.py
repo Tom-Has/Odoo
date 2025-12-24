@@ -7,6 +7,7 @@ note that this API will be phased out with major version 20
 import os
 import base64
 import re
+import mimetypes
 import ast
 import xmlrpc.client
 from collections import namedtuple
@@ -15,12 +16,8 @@ from collections import namedtuple
 root_path = 'path/to/startingpoint'
 folder_subset_file = 'path/to/folderlist/folderfilename.txt'
 
-# define relevant mimetypes
-mimetype_map = {
-    'pdf': 'application/pdf',
-    'jpe?g': 'image/jpeg',
-    'tiff?': 'image/tiff'
-}
+# cover potentially relevant mimetypes
+mimetypes.add_type('text/csv', '.csv')
 
 # provide credentials for XMPRPC API connection
 user_name = 'my_user' # admin user or adapt to specific user
@@ -60,11 +57,7 @@ error_list = []
 # iterate through root directory and create attachment records via API call
 for dirpath, dirnames, filenames in os.walk(root_path):
     for filename in filenames:
-        mimetype = ''
-        for key in mimetype_map.keys():
-            if re.findall(key, filename.split('.')[-1]):
-                mimetype = mimetype_map.get(key)
-                break
+        mimetype, _ = mimetypes.guess_type(filename)
         if not mimetype:
             print(f'{filename} has no specified mime type.')
             error_list.append(ErrorRecord(filename, 'skipped#nomimetype'))
@@ -93,7 +86,7 @@ for dirpath, dirnames, filenames in os.walk(root_path):
                         'key': parent_folder,
                         'res_model': res_model_string or '',
                         'res_id': res_id or 0,
-                        'mimetype': mimetype or 'text/plain',
+                        'mimetype': mimetype or 'application/octet-stream',
                         'type': 'binary'
                     }])
                 except Exception as e:
@@ -108,6 +101,7 @@ for dirpath, dirnames, filenames in os.walk(root_path):
             print(f'{filename} is not in list.')
             error_list.append(ErrorRecord(filename, 'skipped#notspecified'))
             continue
+
 
 
 
