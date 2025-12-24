@@ -58,10 +58,6 @@ error_list = []
 for dirpath, dirnames, filenames in os.walk(root_path):
     for filename in filenames:
         mimetype, _ = mimetypes.guess_type(filename)
-        if not mimetype:
-            print(f'{filename} has no specified mime type.')
-            error_list.append(ErrorRecord(filename, 'skipped#nomimetype'))
-            continue
         parent_folder = os.path.basename(dirpath)
         if (len(folder_subset_list) == 0 or parent_folder in folder_subset_list):
             try:
@@ -101,6 +97,7 @@ for dirpath, dirnames, filenames in os.walk(root_path):
             print(f'{filename} is not in list.')
             error_list.append(ErrorRecord(filename, 'skipped#notspecified'))
             continue
+
 
 
 
