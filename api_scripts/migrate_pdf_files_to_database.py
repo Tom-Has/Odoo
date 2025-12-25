@@ -61,7 +61,6 @@ mimetypes.add_type('application/opendocument', '.ods')
 # ensure existence of root directory
 if not os.path.exists(root_path)):
     exit("A directory for attachment files must be provided!")
-root_directory = pathlib.Path(root_path)
 
 # ensure existence and correct type of specification file
 spec_file_mimetype = mimetypes.guess_type(spec_file_path)[0]
@@ -98,6 +97,7 @@ error_list = []
 
 # iterate through file dataframe and create attachment records via API call
 for index, rows in df_file_specs_filtered.iterrows():
+    
     filename = row[file_path_col].split('/')[-1].strip()
     mimetype, _ = mimetypes.guess_type(filename)
     
@@ -130,4 +130,5 @@ for index, rows in df_file_specs_filtered.iterrows():
         print(f'{filename} seems to be empty.')
         error_list.append(ErrorRecord(filename, 'error#emptyfile'))
         continue
+
 
