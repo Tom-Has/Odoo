@@ -1,5 +1,9 @@
+"""
+rework needed according v17+ documentation
+"""
+
 # group
-duplicates = env['<model_name>'].read_group(
+duplicates = env['<model_name>']._read_group(
     domain=[],
     fields=['<field_name1>', '<field_name2>', '<field_name3>:<aggregate_func>'],
     groupby=['<field_name1>', '<field_name2>']
@@ -23,3 +27,4 @@ include the following statements at the beginning when operating outside of odoo
 from odoo import api, SUPERUSER_ID
 env = api.Environment(cr, SUPERUSER_ID, {})
 """
+
